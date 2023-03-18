@@ -1,0 +1,19 @@
+{
+	"private": true,
+	"version": "0.0.0",
+	"scripts": {
+		"deploy": "wrangler publish src/index.ts",
+		"dev": "wrangler dev src/index.ts --experimental-local",
+		"test": "vitest",
+		"start-stackblitz": "WRANGLER_SEND_METRICS=false wrangler dev src/index.ts --local"
+	},
+	"devDependencies": {
+		"@cloudflare/workers-types": "^3.0.0",
+		"better-sqlite3": "^8.0.1",
+		"vitest": "^0.24.5",
+		"wrangler": "^2.1.14"
+	},
+	"dependencies": {
+		"hono": "^3.0.5"
+	}
+}
