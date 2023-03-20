@@ -2,6 +2,8 @@ import { Context } from 'hono';
 import * as models from "./models";
 
 const postSession = async (c: Context) => {
+    c.status(500);
+
     const {
         sessionUuid,
         deviceUuid,
@@ -21,6 +23,7 @@ const postSession = async (c: Context) => {
 
     const doesSessionExists: boolean = (await models.getSession(c, sessionUuid))!;
     if (doesSessionExists) {
+        c.status(409);
         return c.json({ success: false, error: "Session exists already" });
     }
 
@@ -41,6 +44,8 @@ const postSession = async (c: Context) => {
     if (!session) {
         return c.json({ success: false, error: 'postSession(): session read error' });
     }
+
+    c.status(200);
     return c.json(session);
 };
 
