@@ -33,8 +33,7 @@ const createSession = async (
     c: Context,
     sessionUuid: string,
     deviceUuid: string,
-    startTimeEpoch: string,
-    endTimeEpoch: string,
+    session: string,
     readingKey: string,
 ): Promise<any> => {
     const timestamp = parseInt(new Date().getTime() / 1000);
@@ -44,18 +43,16 @@ const createSession = async (
             session_uuid,
             device_uuid,
             reading_key,
-            start_time_epoch,
-            end_time_epoch,
+            session,
             createdAt,
             modifiedAt
-        ) values (?, ?, ?, ?, ?, ?, ?)
+        ) values (?, ?, ?, ?, ?, ?)
     `)
     .bind(
         sessionUuid,
         deviceUuid,
         readingKey,
-        parseInt(startTimeEpoch),
-        parseInt(endTimeEpoch),
+        session,
         timestamp,
         timestamp,
     )

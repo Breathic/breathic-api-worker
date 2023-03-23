@@ -7,16 +7,14 @@ const postSession = async (c: Context) => {
     const {
         sessionUuid,
         deviceUuid,
+        session,
         payload,
-        startTimeEpoch,
-        endTimeEpoch,
     } = await c.req.json();
 
-    if (!sessionUuid) return c.json({ success: false, error: "Missing sessionUuid value for new session" });
-    if (!deviceUuid) return c.json({ success: false, error: "Missing deviceUuid value for new session" });
-    if (!payload) return c.json({ success: false, error: "Missing payload value for new session" });
-    if (!startTimeEpoch) return c.json({ success: false, error: "Missing startTimeEpoch value for new session" });
-    if (!endTimeEpoch) return c.json({ success: false, error: "Missing endTimeEpoch value for new session" });
+    if (!sessionUuid) return c.json({ success: false, error: "Missing sessionUuid argument for new session" });
+    if (!deviceUuid) return c.json({ success: false, error: "Missing deviceUuid argument for new session" });
+    if (!session) return c.json({ success: false, error: "Missing session argument for new session" });
+    if (!payload) return c.json({ success: false, error: "Missing payload argument for new session" });
 
     const readingKey = `${deviceUuid}_${sessionUuid}.csv`;
     await c.env.R2_READINGS.put(readingKey, payload);
@@ -31,8 +29,7 @@ const postSession = async (c: Context) => {
         c,
         sessionUuid,
         deviceUuid,
-        startTimeEpoch,
-        endTimeEpoch,
+        session,
         readingKey,
     );
 
@@ -40,8 +37,8 @@ const postSession = async (c: Context) => {
         return c.json({ success: false, error: 'postSession(): save session error' });
     }
 
-    const session = await models.getSession(c, sessionUuid);
-    if (!session) {
+    const res = await models.getSession(c, sessionUuid);
+    if (!res) {
         return c.json({ success: false, error: 'postSession(): session read error' });
     }
 
