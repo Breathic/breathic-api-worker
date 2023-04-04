@@ -1,5 +1,7 @@
 import { Context } from 'hono';
 import * as models from "./models";
+import jwt from '@tsndr/cloudflare-worker-jwt';
+import { decode } from "js-base64";
 
 const postSession = async (c: Context) => {
     c.status(500);
@@ -15,6 +17,25 @@ const postSession = async (c: Context) => {
     if (!deviceUuid) return c.json({ success: false, error: "Missing deviceUuid argument for new session" });
     if (!session) return c.json({ success: false, error: "Missing session argument for new session" });
     if (!payload) return c.json({ success: false, error: "Missing payload argument for new session" });
+
+    const authorization = c.req.header('Authorization');
+    if (!authorization || authorization.split("Bearer ").length != 2) {
+        c.status(401);
+        return { success: false, error: "AUTHORIZATION_NOT_FOUND" };
+    }
+
+    try {
+        const token = authorization.split("Bearer ")[1];
+        const decoded = await jwt.decode(token, c.env.PRIVATE_KEY);
+        const isValid = decoded.payload.validationKey == sessionUuid;
+
+        if (!isValid) {
+            c.status(403);
+            return c.json({ success: false, error: "KEY_MISMATCH" });
+        }
+    } catch(err) {
+        return c.json({ success: false, error: "KEY_NOT_DECODED" });
+    }
 
     const readingKey = `${deviceUuid}_${sessionUuid}.csv`;
     await c.env.R2_READINGS.put(readingKey, payload);

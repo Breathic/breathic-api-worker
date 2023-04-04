@@ -5,3 +5,7 @@
 *.log
 
 /dist
+
+development.toml
+staging.toml
+production.toml
