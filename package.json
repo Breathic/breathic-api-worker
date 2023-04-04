@@ -15,7 +15,6 @@
 	},
 	"dependencies": {
 		"@tsndr/cloudflare-worker-jwt": "^2.2.1",
-		"hono": "^3.1.5",
-		"js-base64": "^3.7.5"
+		"hono": "^3.1.5"
 	}
 }

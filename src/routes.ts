@@ -1,7 +1,6 @@
 import { Context } from 'hono';
 import * as models from "./models";
 import jwt from '@tsndr/cloudflare-worker-jwt';
-import { decode } from "js-base64";
 
 const postSession = async (c: Context) => {
     c.status(500);
