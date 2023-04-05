@@ -1,43 +1,39 @@
 import { Context } from 'hono';
 import * as models from "./models";
-import jwt from '@tsndr/cloudflare-worker-jwt';
+import * as requests from "./requests";
 
 const postSession = async (c: Context) => {
     c.status(500);
 
     const {
+        deviceToken,
         sessionUuid,
         deviceUuid,
         session,
-        payload,
+        readings,
     } = await c.req.json();
 
+    if (!deviceToken) return c.json({ success: false, error: "Missing deviceToken argument for new session" });
     if (!sessionUuid) return c.json({ success: false, error: "Missing sessionUuid argument for new session" });
     if (!deviceUuid) return c.json({ success: false, error: "Missing deviceUuid argument for new session" });
     if (!session) return c.json({ success: false, error: "Missing session argument for new session" });
-    if (!payload) return c.json({ success: false, error: "Missing payload argument for new session" });
+    if (!readings) return c.json({ success: false, error: "Missing readings argument for new session" });
 
-    const authorization = c.req.header('Authorization');
-    if (!authorization || authorization.split("Bearer ").length != 2) {
-        c.status(401);
-        return { success: false, error: "AUTHORIZATION_NOT_FOUND" };
-    }
+    const isDeviceAuthorized = await requests.validateDevice(
+        deviceToken,
+        c.env.APP_STORE_DEVICE_CHECK_ID,
+        c.env.APP_STORE_DEVICE_CHECK_KEY,
+        c.env.APP_STORE_TEAM_ID,
+        c.env.APP_STORE_BUNDLE_ID,
+    );
 
-    try {
-        const token = authorization.split("Bearer ")[1];
-        const decoded = await jwt.decode(token, c.env.PRIVATE_KEY);
-        const isValid = decoded.payload.validationKey == sessionUuid;
-
-        if (!isValid) {
-            c.status(403);
-            return c.json({ success: false, error: "KEY_MISMATCH" });
-        }
-    } catch(err) {
-        return c.json({ success: false, error: "KEY_NOT_DECODED" });
+    if (!isDeviceAuthorized) {
+        c.status(403);
+        return c.json({ success: false, error: "UNAUTHORIZED_DEVICE" });
     }
 
     const readingKey = `${deviceUuid}_${sessionUuid}.csv`;
-    await c.env.R2_READINGS.put(readingKey, payload);
+    await c.env.R2_READINGS.put(readingKey, readings);
 
     const doesSessionExists: boolean = (await models.getSession(c, sessionUuid))!;
     if (doesSessionExists) {
