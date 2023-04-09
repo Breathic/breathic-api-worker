@@ -5,6 +5,8 @@ import * as requests from "./requests";
 const postSession = async (c: Context) => {
     c.status(500);
 
+    const isDevelopment: boolean = c.env.APP_ENV == "development";
+
     const {
         deviceToken,
         sessionUuid,
@@ -13,7 +15,7 @@ const postSession = async (c: Context) => {
         readings,
     } = await c.req.json();
 
-    if (!deviceToken) return c.json({ success: false, error: "Missing deviceToken argument for new session" });
+    if (!isDevelopment && !deviceToken) return c.json({ success: false, error: "Missing deviceToken argument for new session" });
     if (!sessionUuid) return c.json({ success: false, error: "Missing sessionUuid argument for new session" });
     if (!deviceUuid) return c.json({ success: false, error: "Missing deviceUuid argument for new session" });
     if (!session) return c.json({ success: false, error: "Missing session argument for new session" });
@@ -27,7 +29,7 @@ const postSession = async (c: Context) => {
         c.env.APP_STORE_BUNDLE_ID,
     );
 
-    if (!isDeviceAuthorized) {
+    if (!isDevelopment && !isDeviceAuthorized) {
         c.status(403);
         return c.json({ success: false, error: "UNAUTHORIZED_DEVICE" });
     }
