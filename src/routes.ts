@@ -13,6 +13,7 @@ const postSession = async (c: Context) => {
         deviceUuid,
         session,
         readings,
+        overview,
     } = await c.req.json();
 
     if (!isDevelopment && !deviceToken) return c.json({ success: false, error: "Missing deviceToken argument for new session" });
@@ -20,6 +21,7 @@ const postSession = async (c: Context) => {
     if (!deviceUuid) return c.json({ success: false, error: "Missing deviceUuid argument for new session" });
     if (!session) return c.json({ success: false, error: "Missing session argument for new session" });
     if (!readings) return c.json({ success: false, error: "Missing readings argument for new session" });
+    if (!overview) return c.json({ success: false, error: "Missing overview argument for new session" });
 
     const isDeviceAuthorized = await requests.validateDevice(
         deviceToken,
@@ -34,8 +36,8 @@ const postSession = async (c: Context) => {
         return c.json({ success: false, error: "UNAUTHORIZED_DEVICE" });
     }
 
-    const readingKey = `${deviceUuid}_${sessionUuid}.csv`;
-    await c.env.R2_READINGS.put(readingKey, readings);
+    await c.env.R2_READINGS.put(`${sessionUuid}.csv`, readings);
+    await c.env.R2_OVERVIEWS.put(`${sessionUuid}.json`, overview);
 
     const doesSessionExists: boolean = (await models.getSession(c, sessionUuid))!;
     if (doesSessionExists) {
@@ -48,7 +50,6 @@ const postSession = async (c: Context) => {
         sessionUuid,
         deviceUuid,
         session,
-        readingKey,
     );
 
     if (!success) {
@@ -77,8 +78,7 @@ const getReadingsForSession = async (c: Context): Promise<any> => {
         return c.text("");
     }
     else {
-        const readingKey = session["reading_key"];
-        const object = await c.env.R2_READINGS.get(readingKey);
+        const object = await c.env.R2_READINGS.get(`${sessionUuid}.csv`);
 
         if (object === null) {
             c.status(404);
@@ -92,8 +92,30 @@ const getReadingsForSession = async (c: Context): Promise<any> => {
     }
 };
 
+const getOverviewForSession = async (c: Context): Promise<any> => {
+    const { sessionUuid } = c.req.param();
+    const session = await models.getSession(c, sessionUuid);
+    if (!session) {
+        return c.text("");
+    }
+    else {
+        const object = await c.env.R2_OVERVIEWS.get(`${sessionUuid}.json`);
+
+        if (object === null) {
+            c.status(404);
+            return c.text("Overview Object Not Found");
+        }
+  
+        const headers = new Headers();
+        object.writeHttpMetadata(headers);
+        c.header('etag', object.httpEtag);
+        return c.text(object.body);
+    }
+};
+
 export {
     postSession,
     getSessionsForDevice,
     getReadingsForSession,
+    getOverviewForSession,
 };

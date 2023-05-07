@@ -4,7 +4,6 @@ CREATE TABLE IF NOT EXISTS sessions (
   session_uuid text NOT NULL,
   device_uuid text NOT NULL,
   session text NOT NULL,
-  reading_key text NOT NULL,
   createdAt integer NOT NULL,
   modifiedAt integer NOT NULL,
   deletedAt integer NULL

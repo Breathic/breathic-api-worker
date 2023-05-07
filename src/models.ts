@@ -34,7 +34,6 @@ const createSession = async (
     sessionUuid: string,
     deviceUuid: string,
     session: string,
-    readingKey: string,
 ): Promise<any> => {
     const timestamp = parseInt(new Date().getTime() / 1000);
 
@@ -42,16 +41,14 @@ const createSession = async (
         insert into sessions (
             session_uuid,
             device_uuid,
-            reading_key,
             session,
             createdAt,
             modifiedAt
-        ) values (?, ?, ?, ?, ?, ?)
+        ) values (?, ?, ?, ?, ?)
     `)
     .bind(
         sessionUuid,
         deviceUuid,
-        readingKey,
         session,
         timestamp,
         timestamp,

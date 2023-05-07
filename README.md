@@ -1,8 +1,3 @@
-# create private key (under /breathic/Extension/keys)
-openssl rand -hex 20 -out development|staging|production.key
-
-# manually replace those keys for development|staging|production.toml for PRIVATE_KEY
-
 # deploy typescript app to worker
 npx wrangler publish --config configs/development|staging|production.toml
 
