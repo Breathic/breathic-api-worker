@@ -99,7 +99,7 @@ const getOverviewForSession = async (c: Context): Promise<any> => {
         return c.text("");
     }
     else {
-        const object = await c.env.R2_OVERVIEWS.get(`${sessionUuid}.json`);
+        const object = await c.env.R2_OVERVIEW.get(`${sessionUuid}.json`);
 
         if (object === null) {
             c.status(404);
