@@ -37,7 +37,7 @@ const postSession = async (c: Context) => {
     }
 
     await c.env.R2_READINGS.put(`${sessionUuid}.csv`, readings);
-    await c.env.R2_OVERVIEWS.put(`${sessionUuid}.json`, overview);
+    await c.env.R2_OVERVIEW.put(`${sessionUuid}.json`, overview);
 
     const doesSessionExists: boolean = (await models.getSession(c, sessionUuid))!;
     if (doesSessionExists) {

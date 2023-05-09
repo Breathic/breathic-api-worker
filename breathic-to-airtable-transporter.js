@@ -3,17 +3,18 @@ const fetch = require('cross-fetch');
 
 const envUrls = [
     'https://dev.api.breathic.com',
-    //'https://staging.api.breathic.com',
+    'https://staging.api.breathic.com',
     //'https://api.breathic.com',
 ];
 
 const deviceUuids = [
-    'B0ACEBD3-045A-4F12-A87A-9B95D2F83BEB'
+    'B0ACEBD3-045A-4F12-A87A-9B95D2F83BEB',
+    'AFE783B4-4024-4D13-8373-AD44D4EC67CA',
 ];
 
 const airtableUrl = 'https://api.airtable.com/v0/';
-const baseId = 'appIFKjtMjSEaHNEq';
-const tableId = 'tblpMXXUdLJeWNKje';
+const baseId = 'appXYE1grIeldnX0G';
+const tableId = 'tblE5RFHSa5VZtUFu';
 
 const getAirtableIds = async () => {
     const options = {
@@ -57,12 +58,12 @@ const createAirtableRecord = async (session) => {
     const payload = JSON.parse(session.session);
 
     const data = {
-        "fields": {
-            Datetime: payload.startTime.replace('Z', '.000Z'),
+        'fields': {
+            'Datetime': payload.startTimeUtc,
             'ID': session['session_uuid'],
             'Moving Time Pretty': payload.elapsedSeconds,
             'Elapsed Time': payload.elapsedSeconds,
-            Type: payload.activityKey.replace(/^./, str => str.toUpperCase()),
+            'Type': payload.activityKey.replace(/^./, str => str.toUpperCase()),
             'Distance in K': payload.distance / 1000,
             //'Pace Per K': 8520,
             //'Average Speed In Kph': 25.42,
