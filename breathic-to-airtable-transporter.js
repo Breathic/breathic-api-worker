@@ -3,7 +3,7 @@ const fetch = require('cross-fetch');
 
 const envUrls = [
     'https://dev.api.breathic.com',
-    'https://staging.api.breathic.com',
+    //'https://staging.api.breathic.com',
     //'https://api.breathic.com',
 ];
 
@@ -61,12 +61,12 @@ const createAirtableRecord = async (session) => {
         'fields': {
             'Datetime': payload.startTimeUtc,
             'ID': session['session_uuid'],
-            'Moving Time Pretty': payload.elapsedSeconds,
+            'Moving Time Pretty': payload.elapsedSeconds * 60,
             'Elapsed Time': payload.elapsedSeconds,
             'Type': payload.activityKey.replace(/^./, str => str.toUpperCase()),
             'Distance in K': payload.distance / 1000,
-            //'Pace Per K': 8520,
-            //'Average Speed In Kph': 25.42,
+            'Pace Per K': payload.elapsedSeconds / (payload.distance / 1000) * 60,
+            'Average Speed In Kph': payload.distance / payload.elapsedSeconds * 3.6,
             'Average Heartrate': session.overview.heart,
             'Average Breathrate': session.overview.breath,
           }
@@ -88,7 +88,7 @@ const createAirtableRecord = async (session) => {
 (async () => {
     const airtableIds = await getAirtableIds();
     let breathicSessions = (await getBreathicSessions())
-        .filter((session) => !airtableIds.includes(session['session_uuid']));
+        //.filter((session) => !airtableIds.includes(session['session_uuid']));
 
     let index = 0;
     while (index != breathicSessions.length) {

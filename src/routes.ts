@@ -113,9 +113,16 @@ const getOverviewForSession = async (c: Context): Promise<any> => {
     }
 };
 
+const deleteSession = async (c: Context): Promise<any> => {
+    const { sessionUuid } = c.req.param();
+    const response = await models.deleteSession(c, sessionUuid);
+    return c.json(response);
+};
+
 export {
     postSession,
     getSessionsForDevice,
     getReadingsForSession,
     getOverviewForSession,
+    deleteSession,
 };

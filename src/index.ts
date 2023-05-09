@@ -9,5 +9,7 @@ app.post('/session', async c => await routes.postSession(c));
 app.get('/sessions/:deviceUuid', async c => await routes.getSessionsForDevice(c));
 app.get('/session/:sessionUuid/readings', async c => await routes.getReadingsForSession(c));
 app.get('/session/:sessionUuid/overview', async c => await routes.getOverviewForSession(c));
+app.get('/session/:sessionUuid/delete', async c => await routes.deleteSession(c));
+
 
 export default app;

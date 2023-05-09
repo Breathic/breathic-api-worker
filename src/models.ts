@@ -6,6 +6,7 @@ const getSessionsForDevice = async (
 ): Promise<any> => {
     return await c.env.DB.prepare(`
         select * from sessions where device_uuid = ?
+        and deletedAt is NULL
     `)
     .bind(deviceUuid)
     .all();
@@ -17,6 +18,7 @@ const getSession = async (
 ): Promise<any> => {
     const response = await c.env.DB.prepare(`
         select * from sessions where session_uuid = ?
+        and deletedAt is NULL
     `)
     .bind(sessionUuid)
     .all();
@@ -56,8 +58,21 @@ const createSession = async (
     .run();
 };
 
+const deleteSession = async (
+    c: Context,
+    sessionUuid: string,
+): Promise<any> => {
+    const timestamp = parseInt(new Date().getTime() / 1000);
+    return await c.env.DB.prepare(`
+        UPDATE sessions SET deletedAt=? WHERE session_uuid=? 
+    `)
+    .bind(timestamp, sessionUuid)
+    .all();
+};
+
 export {
     getSessionsForDevice,
     getSession,
     createSession,
+    deleteSession,
 };
