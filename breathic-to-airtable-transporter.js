@@ -16,6 +16,8 @@ const airtableUrl = 'https://api.airtable.com/v0/';
 const baseId = 'appXYE1grIeldnX0G';
 const tableId = 'tblE5RFHSa5VZtUFu';
 
+const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
 const getAirtableIds = async () => {
     const options = {
         method: 'GET',
@@ -35,23 +37,33 @@ const getOverviewForSession = async (envUrl, sessionUuid) => {
 };
 
 const getBreathicSessions = async () => {
-    const sessions = await Promise.all(
+    const res = await Promise.all(
         envUrls.map(async (envUrl) => {
             return await Promise.all(
                 deviceUuids.map(async (deviceUuid) => {
                     const res = await fetch(`${envUrl}/sessions/${deviceUuid}`);
-                    return await Promise.all(
-                        (await res.json()).map(async (session) => {
+                    const sessions = await res.json();
+                    let sessionIndex = 0;
+                    let sessionsWithOverviews = []
+
+                    while (sessionIndex != sessions.length) {
+                        const session = sessions[sessionIndex];
+
+                        if (session) {
                             session.overview = await getOverviewForSession(envUrl, session['sessionUuid']);
-                            return session;
-                        })
-                    );
+                            sessionsWithOverviews.push(session);
+                            await sleep(1000);
+                        }
+
+                        sessionIndex = sessionIndex + 1;
+                    }
+                    return sessionsWithOverviews;
                 })
             );
         })
     );
 
-    return sessions.flat(2);
+    return res.flat(2);
 };
 
 const createAirtableRecord = async (session) => {
