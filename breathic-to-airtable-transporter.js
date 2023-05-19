@@ -10,6 +10,7 @@ const envUrls = [
 const deviceUuids = [
     'B0ACEBD3-045A-4F12-A87A-9B95D2F83BEB',
     'AFE783B4-4024-4D13-8373-AD44D4EC67CA',
+    'E7C77657-F07A-403F-9315-E71E65A90EC8',
 ];
 
 const airtableUrl = 'https://api.airtable.com/v0/';
