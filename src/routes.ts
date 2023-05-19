@@ -65,6 +65,12 @@ const postSession = async (c: Context) => {
     return c.json(session);
 };
 
+const getSession = async (c: Context): Promise<any> => {
+    const { sessionUuid } = c.req.param();
+    const session = await models.getSession(c, sessionUuid);
+    return c.json(session);
+};
+
 const getSessionsForDevice = async (c: Context): Promise<any> => {
     const { deviceUuid } = c.req.param();
     const response = await models.getSessionsForDevice(c, deviceUuid);
@@ -121,6 +127,7 @@ const deleteSession = async (c: Context): Promise<any> => {
 
 export {
     postSession,
+    getSession,
     getSessionsForDevice,
     getReadingsForSession,
     getOverviewForSession,

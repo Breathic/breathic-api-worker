@@ -36,13 +36,14 @@ const getOverviewForSession = async (envUrl, sessionUuid) => {
     return res.json();
 };
 
-const getBreathicSessions = async () => {
+const getBreathicSessions = async (airtableIds) => {
     const res = await Promise.all(
         envUrls.map(async (envUrl) => {
             return await Promise.all(
                 deviceUuids.map(async (deviceUuid) => {
                     const res = await fetch(`${envUrl}/sessions/${deviceUuid}`);
-                    const sessions = await res.json();
+                    const sessions = (await res.json())
+                        .filter((session) => !airtableIds.includes(session['sessionUuid']));;
                     let sessionIndex = 0;
                     let sessionsWithOverviews = []
 
@@ -99,8 +100,7 @@ const createAirtableRecord = async (session) => {
 
 (async () => {
     const airtableIds = await getAirtableIds();
-    let breathicSessions = (await getBreathicSessions())
-        .filter((session) => !airtableIds.includes(session['sessionUuid']));
+    const breathicSessions = (await getBreathicSessions(airtableIds));
 
     let index = 0;
     while (index != breathicSessions.length) {

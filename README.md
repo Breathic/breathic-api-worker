@@ -1,5 +1,5 @@
 # deploy typescript app to worker
-npx wrangler publish --config configs/development|staging|production.toml
+npx wrangler publish --config development|staging|production.toml
 
 # migrate
 wrangler d1 execute breathic-api-database-dev|staging|production --file schema.sql
