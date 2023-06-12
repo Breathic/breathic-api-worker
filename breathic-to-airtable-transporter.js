@@ -8,9 +8,7 @@ const envUrls = [
 ];
 
 const deviceUuids = [
-    'B0ACEBD3-045A-4F12-A87A-9B95D2F83BEB',
-    'AFE783B4-4024-4D13-8373-AD44D4EC67CA',
-    'E7C77657-F07A-403F-9315-E71E65A90EC8',
+    'A6A5A559-0851-4EFD-ABD9-E7EEDF90A163'
 ];
 
 const airtableUrl = 'https://api.airtable.com/v0/';
@@ -71,6 +69,10 @@ const getBreathicSessions = async (airtableIds) => {
 const createAirtableRecord = async (session) => {
     const payload = JSON.parse(session.session);
 
+    if (payload.activityKey !== 'Move') {
+        return;
+    }
+
     const data = {
         'fields': {
             'Datetime': payload.startTimeUtc,
@@ -83,7 +85,7 @@ const createAirtableRecord = async (session) => {
             'Average Speed In Kph': payload.distance / payload.elapsedSeconds * 3.6,
             'Average Heartrate': session.overview.heart,
             'Average Breathrate': session.overview.breath,
-          }
+        }
     };
     const options = {
         method: 'POST',
