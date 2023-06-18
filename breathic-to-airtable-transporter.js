@@ -3,12 +3,12 @@ const fetch = require('cross-fetch');
 
 const envUrls = [
     //'https://dev.api.breathic.com',
-    'https://staging.api.breathic.com',
+    'https://api.breathic.com',
     //'https://api.breathic.com',
 ];
 
 const deviceUuids = [
-    'A6A5A559-0851-4EFD-ABD9-E7EEDF90A163'
+    '07F08710-A45B-4C04-A159-9DED0AA6C8F6'
 ];
 
 const airtableUrl = 'https://api.airtable.com/v0/';
