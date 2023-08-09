@@ -8,7 +8,7 @@ const envUrls = [
 ];
 
 const deviceUuids = [
-    '07F08710-A45B-4C04-A159-9DED0AA6C8F6'
+    'DF92206C-8440-4316-8B09-8AE127B651F2'
 ];
 
 const airtableUrl = 'https://api.airtable.com/v0/';
@@ -40,7 +40,9 @@ const getBreathicSessions = async (airtableIds) => {
         envUrls.map(async (envUrl) => {
             return await Promise.all(
                 deviceUuids.map(async (deviceUuid) => {
-                    const res = await fetch(`${envUrl}/sessions/${deviceUuid}`);
+                    const url = `${envUrl}/device/${deviceUuid}`;
+                    console.log({url});
+                    const res = await fetch(url);
                     const sessions = (await res.json())
                         .filter((session) => !airtableIds.includes(session['sessionUuid']));;
                     let sessionIndex = 0;
